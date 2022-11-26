@@ -67,7 +67,7 @@ rf = RandomForestRegressor(n_jobs=-1, random_state=42).fit(X_train2, y_train)
 X_test2 = pd.concat([X_test, X_test['X2']], axis=1).set_axis(["X0", "X1", "X2", "X3"], axis=1)
 
 # var_groupsを指定しなければ通常のPFIが計算される
-gpfi = GPFI(rf, X_test2, y_test, var_names=["X0", "X1", "X2", "X3"])
+gpfi = GPFI(rf, X_test2, y_test)
 gpfi.permutation_feature_importance()
 gpfi.plot()
 
