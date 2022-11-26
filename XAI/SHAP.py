@@ -128,6 +128,38 @@ class SHAP:
         fig.suptitle(f"SHAP値 \n(Baseline: {self.baseline:.2f}, Prediction: {predicted_value:.2f}, Difference: {predicted_value - self.baseline:.2f})")
 
         fig.show()
+        
+    def fi_plot(self):
+        """SHAPの分布をプロットする
+        箱ヒゲ図とスウォームプロットを用いる
+        """
+        
+        self.df_shap_fi = pd.DataFrame()
+        for i in range(len(self.X)):
+            self.shap(i)
+            self.df_shap['instance'] = i
+            self.df_shap_fi = pd.concat([self.df_shap_fi, self.df_shap], axis=0)
+            
+        # グラフにプロットする
+        fig, ax = plt.subplots()
+        
+        sns.boxplot(x='shap_value', y='var_name', data=self.df_shap_fi, showfliers=False, color="white", ax=ax)
+        sns.stripplot(x='shap_value', y='var_name', data=self.df_shap_fi, hue="feature_value", palette="bwr", jitter=True, ax=ax)
+        ax.legend_.remove()
+        
+        #Colormap for comparison
+        cmap = plt.get_cmap("bwr")
+        norm = plt.Normalize(min(self.df_shap_fi['feature_value']),max(self.df_shap_fi['feature_value']))
+        sm =  ScalarMappable(norm=norm, cmap=cmap)
+        sm.set_array([])
+        cbar = fig.colorbar(sm, ax=ax)
+
+        ax.set(
+            xlabel="SHAP値",
+            ylabel="特徴量"
+        )
+        fig.suptitle(f"SHAP値 分布")
+        fig.show()
 
         
 # テスト------------------------------------------------------------------------------------------------------------------
@@ -144,3 +176,5 @@ shap.shap(id_to_compute=1)
 display(shap.df_shap)
 # SHAP値を可視化
 shap.plot()
+# SHAP値の分布を可視化
+shap.fi_plot()
