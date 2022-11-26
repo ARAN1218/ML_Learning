@@ -9,3 +9,5 @@
 - アダブースティング(AdaBoosting)
 - XGBoost
 - LightGBM
+- スタッキング(Stacking)
+- バギングをブースティングしてスタッキングする（？）
