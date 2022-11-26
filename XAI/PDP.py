@@ -4,13 +4,12 @@ class PDP:
     Args:
         estimator: 学習済みモデル(Any)
         X: 特徴量(pd.DataFrame)
-        var_names: 特徴量の名前(list[str])
     """
     
-    def __init__(self, estimator, X, var_names):
+    def __init__(self, estimator, X):
         self.estimator = estimator
         self.X = X
-        self.var_names = list(var_names)
+        self.var_names = list(self.X.columns)
     
     def _counterfactual_prediction(self, var_name_to_replace: str, value_to_replace: float) -> pd.DataFrame:
         """ある特徴量の値を置き換えたときの予測値を求める
@@ -43,8 +42,6 @@ class PDP:
         
         # 可視化の際に用いるのでターゲットの変数名を保存
         self.target_var_name = var_name
-        # 変数名に対応するインデックスをもってくる
-        var_index = self.var_names.index(var_name)
 
         # ターゲットの変数を、取りうる値の最大値から最小値まで動かせるようにする
         value_range = np.linspace(
@@ -96,7 +93,7 @@ X_train, X_test, y_train, y_test = generate_simulation_data2()
 rf = RandomForestRegressor(n_jobs=-1, random_state=42).fit(X_train, y_train)
 
 # PDのインスタンスを作成
-pdp = PDP(rf, X_test, X_test.columns)
+pdp = PDP(rf, X_test)
 # X1に対するPDを計算
 pdp.pdp("X1", n_grid=50)
 # PDを可視化
