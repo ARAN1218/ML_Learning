@@ -5,15 +5,14 @@ class LOCOFI:
         estimator: 評価に用いる学習モデルインスタンス(Any)
         X: 特徴量(pd.DataFrame)
         y: 目的変数(pd.DataFrame)
-        var_names: 特徴量の名前(list[str])
     """
     
     # クラスインスタンスを定義
-    def __init__(self, estimator, X, y, var_names):
+    def __init__(self, estimator, X, y):
         self.estimator = estimator
         self.X = X
         self.y = y
-        self.var_names = var_names
+        self.var_names = list(self.X.columns)
         
         # 削除なしの場合の予測精度
         # mean_squared_error()はsquared=TrueならMSE、squared=FalseならRMSE
@@ -87,7 +86,7 @@ print(f"R2: {r2_score(y_test, rf.predict(X_test)):.2f}")
 
 # LOCOFIを計算して可視化
 # LOCOFIのインスタンスの作成
-locofi = LOCOFI(rf, X_test, y_test, X_test.columns)
+locofi = LOCOFI(rf, X_test, y_test)
 # LOCOFIを計算
 locofi.locofi()
 # LOCOFIを可視化
