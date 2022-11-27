@@ -31,6 +31,16 @@
 
 
 
+### PDP&ICE
+
+
+
+
+### CPD(Conditional Partial Dependence)
+
+
+
+
 
 ### SHAP(SHapley Additive exPlanations)
 
