@@ -1,3 +1,20 @@
+# 重回帰分析　テスト
+## 最小二乗法
+# シミュレーションデータの生成(回帰)
+def generate_data_regression():
+    boston = load_boston()
+    boston_data = pd.DataFrame(boston.data, columns=boston.feature_names)
+    boston_target = pd.DataFrame(boston.target, columns=['MEDV'])
+    # boston_all = pd.concat([boston_data,boston_target], axis=1)
+    return train_test_split(boston_data, boston_target, test_size=0.2, random_state=42)
+
+X_train, X_test, y_train, y_test = generate_data_regression()
+
+mra = MRA()
+mra.fit(X_train, y_train)
+mra.predict(X_test)
+
+
 # 二項ロジスティック回帰　テスト
 import numpy as np
 import pandas as pd
