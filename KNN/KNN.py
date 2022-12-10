@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 class KNN:
-    """K近傍法クラス"""
+    """K近傍法"""
     
     def __init__(self, K=1, types="classification"):
         """K近傍法のパラメータを設定する
@@ -27,26 +27,42 @@ class KNN:
         """
         self.X = X
         self.Y = Y
-        self.cov_inv = np.linalg.pinv(self.X.cov())
-        self.mean = pd.DataFrame(self.X.mean()).T
+        self.mean = self.X.mean()
         self.target_name = self.Y.columns[0]
     
     def euclid(self, inputs):
         """ユークリッド距離"""
-        return (((self.X - inputs)**2).sum(axis=1))**0.5
+        self._X[method] = (((self.X - inputs)**2).sum(axis=1))**0.5
+        self.predict_to_similality()
     
     def manhattan(self, inputs):
         """マンハッタン距離"""
-        return abs(self.X - inputs)
+        self._X[method] = abs(self.X - inputs)
+        self.predict_to_similality()
     
     def mahalanobis(self, inputs):
         """マハラノビス距離"""
         # 注意：平均の代わりに学習データのインスタンスを採用しているため、厳密なマハラノビス距離の定義とは異なる。
-        return self.X.apply(lambda x : (np.dot((inputs - x), np.dot(self.cov_inv, (inputs - x))))**0.5, axis=1)
+        #      また、負の数の平方根を取らないように、全体の絶対値に対して計算している。
+        self._X[method] = abs(np.dot((inputs - self.X), np.dot(self.cov_inv, (inputs - self.X).T)))**0.5
+        self.predict_to_similality()
     
     def chebyshev(self, inputs):
         """チェビシェフ距離"""
-        return self.X.apply(lambda x : max(x - inputs), axis=1)
+        self._X[method] = np.max((self.X - inputs), axis=1)
+        self.predict_to_similality()
+    
+    def predict_to_similality(self):
+        """類似度を基に予測結果を計算する"""
+        if self.types == "classification":
+            # 計算した類似度を基に降順にデータを並べ替え、Kの数だけ選択して多数決投票を行う。
+            pred = pd.concat([self._X, self.Y], axis=1).sort_values(method, ascending=True)[self.target_name][:self.K].value_counts()
+            self.pred_list.append(pred.index[0])
+
+        else:
+            # 計算した類似度を基に降順にデータを並べ替え、Kの数だけ選択して平均値を求める。
+            pred = pd.concat([self._X, self.Y], axis=1).sort_values(method, ascending=True)[self.target_name][:self.K]
+            self.pred_list.append(pred.mean())
         
     def predict(self, input_data, method="Euclid"):
         """K近傍法で入力したデータを分類する
@@ -66,30 +82,16 @@ class KNN:
         # 元データに上書きしないようにコピーを作成する
         self._X = self.X.copy()
         self._X[method] = 0
-        d_list = []
+        self.pred_list = []
         
-        for row in input_data.itertuples():
-            index = row[0]
-            row = row[1:]
-            
-            # 類似度を計算
-            self._X[method] = self.euclid(row) if method=="Euclid" \
-                            else self.manhattan(row) if method=="Manhattan" \
-                            else self.chebyshev(row) if method=="Chebyshev" \
-                            else self.mahalanobis(row)
-            
-            if self.types == "classification":
-                # 計算した類似度を基に降順にデータを並べ替え、Kの数だけ選択して多数決投票を行う。
-                pred = pd.concat([self._X, self.Y], axis=1).sort_values(method, ascending=True)[self.target_name][:self.K].value_counts()
-                d = {'index':index, 'prediction':pred.index[0], 'cnt':pred[0]}
-                d_list.append(d)
-                
-            else:
-                # 計算した類似度を基に降順にデータを並べ替え、Kの数だけ選択して平均値を求める。
-                pred = pd.concat([self._X, self.Y], axis=1).sort_values(method, ascending=True)[self.target_name][:self.K]
-                d = {'index':index, 'prediction':pred.mean()}
-                d_list.append(d)
+        if method=="Euclid":
+            input_data.apply(lambda x : self.euclid(x), axis=1)
+        elif method=="Manhattan":
+            input_data.apply(lambda x : self.manhattan(x), axis=1)
+        elif method=="Chebyshev":
+            input_data.apply(lambda x : self.chebyshev(x), axis=1)
+        else:
+            self.cov_inv = np.linalg.pinv(self.X.cov())
+            input_data.apply(lambda x : self.mahalanobis(x), axis=1)
         
-        self.summary = pd.DataFrame(d_list)
-        return self.summary['prediction']
-        
+        return np.array(self.pred_list)
