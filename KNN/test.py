@@ -21,7 +21,7 @@ knn.fit(X_train1, y_train1)
 for method in ("Euclid", "Manhattan", "Mahalanobis", "Chebyshev"):
     print(method)
     test = knn.predict(X_test1.iloc[:10], method=method)
-    display(pd.concat([y_test1.iloc[:10].reset_index(drop=True), test], axis=1))
+    display(pd.concat([y_test1.iloc[:10].reset_index(drop=True), pd.DataFrame(test, columns=['prediction'])], axis=1))
 
 
 
@@ -41,4 +41,4 @@ knn.fit(X_train, y_train)
 for method in ("Euclid", "Manhattan", "Mahalanobis", "Chebyshev"):
     print(method)
     test = knn.predict(X_test.iloc[:10], method=method)
-    display(pd.concat([y_test.iloc[:10].reset_index(drop=True), test], axis=1))
+    display(pd.concat([y_test.iloc[:10].reset_index(drop=True), pd.DataFrame(test, columns=['prediction'])], axis=1))
