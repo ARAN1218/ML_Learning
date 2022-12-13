@@ -73,4 +73,4 @@ $$Ef^{2}(x) \geq [Ef(x)]^{2}$$
 ## 参考文献
 - 作ってわかる! アンサンブル学習アルゴリズム入門、坂本俊之、C&R研究所(2019)
 
-![unknown](https://user-images.githubusercontent.com/67265109/207371910-a28a9e67-8ac5-4091-baee-281a845dce86.jpg)
+![Unknown](https://user-images.githubusercontent.com/67265109/207372585-25c2cedf-cfc0-40f9-876c-74790433cb08.jpeg)
