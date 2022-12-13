@@ -108,3 +108,45 @@ else:
     print('Mean Absolute Error: %f'%rp)
     rp = mean_squared_error(y, z)
     print('Mean Squared Error: %f'%rp)
+
+    
+# RandomForest テスト
+#random.seed( 1 )
+import pandas as pd
+
+df = df_diabetes
+x = df[df.columns[:-1]]
+is_regression = True
+
+if not is_regression:
+    y = df[df.columns[-1]]
+    plf = RandomForest(max_features=5, n_trees=5, ratio=1.0, tree_params={'max_depth':10}, is_regression=False)
+    plf.fit(x,y)
+    print(str(plf))
+    z = plf.predict(x)
+    print(z)
+    
+    from sklearn.metrics import classification_report, f1_score, accuracy_score
+    print("accuracy:", accuracy_score(y, z))
+    print("f1_score:", f1_score(y, z, average='weighted'))
+else:
+    y = df[df.columns[-1]]
+    plf = RandomForest(max_features=5, n_trees=5, ratio=1.0, tree_params={'max_depth':10}, is_regression=True)
+    plf.fit(x,y)
+    print(str(plf))
+    z = plf.predict(x)
+    print(z)
+    
+    from sklearn.metrics import r2_score, explained_variance_score, mean_absolute_error, mean_squared_error
+
+    print('Train Score:')
+    rp = r2_score(y, z)
+    print('R2 Score: %f'%rp)
+    rp = explained_variance_score(y, z)
+    print('Explained Variance Score: %f'%rp)
+    rp = mean_absolute_error(y, z)
+    print('Mean Absolute Error: %f'%rp)
+    rp = mean_squared_error( y, z )
+    print('Mean Squared Error: %f'%rp)
+    
+    
