@@ -59,15 +59,19 @@ $$Ef^{2}(x) \geq [Ef(x)]^{2}$$
 - 正解ラベルの貼り間違えや異常値に弱く、過学習しやすいという欠点を持つ。
 - オリジナルのアダブーストは二値分類専用アルゴリズムであるが、それらを多クラス分類タスクや回帰タスクに拡張した改良版アルゴリズムが存在する。
 
-#### アルゴリズム
+#### アルゴリズム(オリジナルAdaBoost)
 1. 使用する機械学習モデルを選択し、学習データにつける重みベクトル・各モデルにつける貢献値を初期化する。
 2. 重みを加えたデータで機械学習モデルを学習させる。
 3. 学習によって予測しにくいデータに重みを移動させるように重みを更新する。
 4. 予測が不正解の位置にある重みの合計を求め、それを元にそのモデルの貢献度を計算・保存する。
 5. 貢献度に応じて重みを調整・正規化し、誤差がある程度小さくなるまでステップ2から繰り返す。
 
+<img width="322" alt="original" src="https://user-images.githubusercontent.com/67265109/208430921-be7f1ae5-2746-4f62-9a50-3a68ecadfcb4.png">
+<img width="327" alt="M1" src="https://user-images.githubusercontent.com/67265109/208430938-25486eb4-f604-4811-bcc4-299dd80b7312.png">
+<img width="342" alt="RT" src="https://user-images.githubusercontent.com/67265109/208430955-574da0d3-2863-430c-a8a4-5ca82c70d1a3.png">
+<img width="335" alt="R2" src="https://user-images.githubusercontent.com/67265109/208430962-41de7c2f-75b6-476c-b599-17125bf9988b.png">
 
-<img width="328" alt="スクリーンショット 2022-12-15 13 10 06" src="https://user-images.githubusercontent.com/67265109/207770588-2710e30a-bd4a-4a2b-8cf4-e0be517d34d3.png">
+
 
 
 ### XGBoost
