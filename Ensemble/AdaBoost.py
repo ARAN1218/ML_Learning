@@ -37,11 +37,19 @@ class AdaBoost:
         return self.adaboost.predict(x)
         
     def __str__(self):
-        """学習したモデルを可視化する"""
+        """学習結果の可視化"""
         return str(self.adaboost)
     
     class AdaBoost_original:
+        """AdaBoost(original)"""
         def __init__(self, model='default', boost=5, model_param={}):
+            """初期化
+            
+            Args: 
+                model: 機械学習クラス(sklearn等)
+                boost: ブースティングの回数
+                model_param: modelのハイパーパラメータ
+            """
             from sklearn.tree import DecisionTreeClassifier
             self.boost = boost
             self.model = DecisionTreeClassifier if model=='default' else model
@@ -50,6 +58,12 @@ class AdaBoost:
             self.alpha = None
 
         def fit(self, x, y):
+            """ブースティングを用いてモデルを学習させる
+            
+            Args:
+                x: 学習データ(pd.DataFrame)
+                y: 正解データ(pd.DataFrame)
+            """
             if len(y.unique()) != 2:
                 print("Only two classify")
                 return # オリジナルのAdaBoostは2クラス分類のみ
@@ -84,12 +98,17 @@ class AdaBoost:
                 # 学習したモデルを追加
                 self.trees.append(tree)
                 # AdaBoostの計算
-                self.alpha[i] = np.log((1.0 - err) / err) / 2.0 # 式9
-                weights *= np.exp(-1.0 * self.alpha[i] * y_bin * z_bin) # 式10
+                self.alpha[i] = np.log((1.0 - err) / err) / 2.0
+                weights *= np.exp(-1.0 * self.alpha[i] * y_bin * z_bin)
                 weights /= weights.sum() # 重みの正規化
                 weights = weights.squeeze()
 
         def predict(self, x):
+            """学習したモデルから予測する
+            
+            Args:
+                x: 予測データ(pd.DataFrame)
+            """
             x = np.array(x)
             # 各モデルの出力の合計
             z = np.zeros((len(x))).reshape((-1, 1))
@@ -101,6 +120,7 @@ class AdaBoost:
             return np.array([z > 0]).astype(int).reshape((-1, 1))
 
         def __str__(self):
+            """学習結果の可視化"""
             s = []
             for i, t in enumerate(self.trees):
                 s.append(f'tree: #{i+1} -- weight={self.alpha[i]}')
@@ -109,7 +129,15 @@ class AdaBoost:
 
 
     class AdaBoost_M1:
+        """AdaBoost(M1)"""
         def __init__(self, model='default', boost=5, model_param={}):
+            """初期化
+            
+            Args: 
+                model: 機械学習クラス(sklearn等)
+                boost: ブースティングの回数
+                model_param: modelのハイパーパラメータ
+            """
             from sklearn.tree import DecisionTreeClassifier
             self.boost = boost
             self.model = DecisionTreeClassifier if model=='default' else model
@@ -119,6 +147,12 @@ class AdaBoost:
             self.n_clz = 0  # クラスの個数
 
         def fit(self, x, y):
+            """ブースティングを用いてモデルを学習させる
+            
+            Args:
+                x: 学習データ(pd.DataFrame)
+                y: 正解データ(pd.DataFrame)
+            """
             # ブースティングで使用する変数
             self.trees = []  # 各機械学習モデルの配列
             self.beta = np.zeros((self.boost,))
@@ -149,30 +183,33 @@ class AdaBoost:
                 # 学習したモデルを追加
                 self.trees.append(tree)
                 # AdaBoost.M1の計算
-                self.beta[i] = err / (1.0 - err) # 式2
-                weights[_filter] *= self.beta[i] # 式3
+                self.beta[i] = err / (1.0 - err)
+                weights[_filter] *= self.beta[i]
                 weights /= weights.sum() # 重みの正規化
                 weights = weights.squeeze()
 
         def predict(self, x):
+            """学習したモデルから予測する
+            
+            Args:
+                x: 予測データ(pd.DataFrame)
+            """
             x = np.array(x)
             # 各モデルの出力の合計
-            ##z = np.zeros((len(x), self.n_clz))
             z = np.zeros((len(x), self.n_clz))
             # 各モデルの貢献度を求める
             w = np.log(1.0 / self.beta)
             if w.sum() == 0:  # 完全に学習してしまいエラーが0の時
                 w = np.ones((len(self.trees))) / len(self.trees)
-            #w = np.log(1.0 / self.beta) if np.log(1.0 / self.beta).sum()==0 else np.ones((len(self.trees))) / len(self.trees)
             # 全てのモデルの貢献度付き合算
             for i, tree in enumerate(self.trees):
-                p = tree.predict(x).reshape((-1, 1))  # p はクラスの確率を表す二次元配列
-                ##c = p.argmax(axis=1)  # c に分類されたクラスの番号
+                p = tree.predict(x).reshape((-1, 1))  # p は分類されたクラスを表す一次元配列
                 for j in range(len(x)):
                     z[j, p[j]] += w[i]  # 分類されたクラスの位置に貢献度を加算
-            return z.argmax(axis=1)  # クラスの属する可能性を表す配列として返す
+            return z.argmax(axis=1)  # クラスの属する可能性を表す配列の内、最も可能性が高いクラスを予測値として返す
 
         def __str__(self):
+            """学習結果の可視化"""
             s = []
             w = np.log(1.0 / self.beta) # モデルの貢献度
             if w.sum() == 0:
@@ -183,7 +220,16 @@ class AdaBoost:
             return '\n'.join(s)
         
     class AdaBoost_RT:
+        """AdaBoost(RT)"""
         def __init__(self, model='default', boost=5, model_param={}, threshold=0.01):
+            """初期化
+            
+            Args: 
+                model: 機械学習クラス(sklearn等)
+                boost: ブースティングの回数
+                model_param: modelのハイパーパラメータ
+                threshold: modelの出力の残差の「正否」の閾値
+            """
             from sklearn.tree import DecisionTreeRegressor
             self.boost = boost
             self.model = DecisionTreeRegressor if model=='default' else model
@@ -193,6 +239,12 @@ class AdaBoost:
             self.threshold = threshold
 
         def fit(self, x, y):
+            """ブースティングを用いてモデルを学習させる
+            
+            Args:
+                x: 学習データ(pd.DataFrame)
+                y: 正解データ(pd.DataFrame)
+            """
             x, y = np.array(x), np.array(y).reshape((-1, 1))
             # ブースティングで使用する変数
             _x, _y = x, y  # 引数を待避しておく
@@ -233,16 +285,21 @@ class AdaBoost:
                     break
                 # AdaBoost.RTの計算
                 self.trees.append(tree)
-                self.beta[i] = err / (1.0 - err) # 式6
-                weights[_filter] *= self.beta[i] ** 2 # 式7
+                self.beta[i] = err / (1.0 - err)
+                weights[_filter] *= self.beta[i] ** 2
                 weights /= weights.sum() # 重みの正規化
 
         def predict(self, x):
+            """学習したモデルから予測する
+            
+            Args:
+                x: 予測データ(pd.DataFrame)
+            """
             x = np.array(x)
             # 各モデルの出力の合計
             z = np.zeros((len(x),1))
             # 各モデルの貢献度を求める
-            w = np.log(1.0 / self.beta) if len(self.beta)>1 else np.ones((len(self.trees),)) # 式8
+            w = np.log(1.0 / self.beta) if len(self.beta)>1 else np.ones((len(self.trees),))
             # 全てのモデルの貢献度付き合算
             for i, tree in enumerate(self.trees):
                 p = tree.predict(x).reshape((-1, 1))
@@ -250,8 +307,9 @@ class AdaBoost:
             return z / w.sum()
 
         def __str__(self):
+            """学習結果の可視化"""
             s = []
-            w = np.log(1.0 / self.beta) if len(self.beta)>1 else np.ones((len(self.trees),)) # 式8
+            w = np.log(1.0 / self.beta) if len(self.beta)>1 else np.ones((len(self.trees),))
             if w.sum() == 0:
                 w = np.ones((len(self.trees),)) / len(self.trees)
             else:
@@ -263,7 +321,15 @@ class AdaBoost:
         
         
     class AdaBoost_R2:
+        """AdaBoost(R2)"""
         def __init__(self, model='default', boost=5, model_param={}):
+            """初期化
+            
+            Args: 
+                model: 機械学習クラス(sklearn等)
+                boost: ブースティングの回数
+                model_param: modelのハイパーパラメータ
+            """
             from sklearn.tree import DecisionTreeRegressor
             self.boost = boost
             self.model = DecisionTreeRegressor if model=='default' else model
@@ -272,6 +338,12 @@ class AdaBoost:
             self.beta = None
 
         def fit(self, x, y):
+            """ブースティングを用いてモデルを学習させる
+            
+            Args:
+                x: 学習データ(pd.DataFrame)
+                y: 正解データ(pd.DataFrame)
+            """
             x, y = np.array(x), np.array(y).reshape((-1, 1))
             # ブースティングで使用する変数
             _x, _y = x, y  # 引数を待避しておく
@@ -312,11 +384,16 @@ class AdaBoost:
                     break
                 self.trees.append(tree)
                 # AdaBoost.R2の計算
-                self.beta[i] = err / (1.0 - err)  # 式12
-                weights *= [np.power(self.beta[i], 1.0 - lo) for lo in loss]  # 式13
+                self.beta[i] = err / (1.0 - err)
+                weights *= [np.power(self.beta[i], 1.0 - lo) for lo in loss]
                 weights /= weights.sum() # 重みの正規化
 
         def predict(self, x):
+            """学習したモデルから予測する
+            
+            Args:
+                x: 予測データ(pd.DataFrame)
+            """
             x = np.array(x)
             # 各モデルの貢献度を求める
             w = np.log(1.0 / self.beta)
@@ -341,6 +418,7 @@ class AdaBoost:
             return result.reshape((-1, 1))  # 元の次元の形に戻す
 
         def __str__(self):
+            """学習結果の可視化"""
             s = []
             w = np.log(1.0 / self.beta)
             if w.sum() == 0:
@@ -351,3 +429,4 @@ class AdaBoost:
                 s.append(f'tree: #{i+1} -- weight={w[i]}')
                 s.append(str(t))
             return '\n'.join(s)
+        
