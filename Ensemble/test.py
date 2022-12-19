@@ -153,11 +153,14 @@ else:
 # AdaBoost テスト
 # テスト(分類)
 import pandas as pd
-df = df_wine.query("target != 2")
+from sklearn.linear_model import LogisticRegression
+df = df_wine#.query("target != 2")
 x = df[df.columns[:-1]]
 y = df[df.columns[-1]]
 
-plf = AdaBoost(boost=5, model_param={'max_depth':5}, adatype='M1')
+plf = AdaBoost(boost=5, model_param={'max_depth':2}, adatype='M1') # モデル指定なし(default)
+#plf = AdaBoost(model=LogisticRegression, boost=5, model_param={}, adatype='M1') # モデル指定あり
+
 plf.fit(x, y)
 print(str(plf))
 z = plf.predict(x)
@@ -169,12 +172,14 @@ print("f1_score:", f1_score(y, z, average='weighted'))
 
 # テスト(回帰)
 import pandas as pd
-
+from sklearn.linear_model import LinearRegression
 df = df_boston
 x = df[df.columns[:-1]]
 y = df[df.columns[-1]]
 
-plf = AdaBoost(boost=5, model_param={'max_depth':5}, adatype='RT', threshold=0.5)
+plf = AdaBoost(boost=5, model_param={'max_depth':5}, adatype='R2', threshold=0.01) # モデル指定なし(default)
+#plf = AdaBoost(model=LinearRegression, boost=5, model_param={}, adatype='R2', threshold=0.01) # モデル指定あり(線形回帰)
+
 plf.fit(x,y)
 z = plf.predict(x)
 print(str(plf))
