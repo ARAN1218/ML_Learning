@@ -150,3 +150,45 @@ else:
     print('Mean Squared Error: %f'%rp)
     
     
+# AdaBoost テスト
+# テスト(分類)
+import pandas as pd
+df = df_wine.query("target != 2")
+x = df[df.columns[:-1]]
+y = df[df.columns[-1]]
+
+plf = AdaBoost(boost=5, model_param={'max_depth':5}, adatype='M1')
+plf.fit(x, y)
+print(str(plf))
+z = plf.predict(x)
+
+from sklearn.metrics import classification_report, f1_score, accuracy_score
+print("accuracy:", accuracy_score(y, z))
+print("f1_score:", f1_score(y, z, average='weighted'))
+
+
+# テスト(回帰)
+import pandas as pd
+
+df = df_boston
+x = df[df.columns[:-1]]
+y = df[df.columns[-1]]
+
+plf = AdaBoost(boost=5, model_param={'max_depth':5}, adatype='RT', threshold=0.5)
+plf.fit(x,y)
+z = plf.predict(x)
+print(str(plf))
+
+from sklearn.metrics import r2_score, explained_variance_score, mean_absolute_error, mean_squared_error
+print('Train Score:')
+rp = r2_score(y, z)
+print('R2 Score: %f'%rp)
+rp = explained_variance_score(y, z)
+print('Explained Variance Score: %f'%rp)
+rp = mean_absolute_error(y, z)
+print('Mean Absolute Error: %f'%rp)
+rp = mean_squared_error(y, z)
+print('Mean Squared Error: %f'%rp)
+
+
+
