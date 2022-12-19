@@ -18,14 +18,12 @@ class AdaBoost:
                 R2: RTの改良型回帰アダブースト
             threshold: RTを選択した場合にのみ必要
         """
-        #self.model = model if model!='default' else \
-        #            DecisionTreeClassifier if adatype in ('original', 'M1') else \
-        #            DecisionTreeRegressor
-        self.adaboost = self.AdaBoost_original(boost=boost, model_param=model_param) if adatype=='original' else \
-                        self.AdaBoost_M1(boost=boost, model_param=model_param) if adatype=='M1' else \
-                        self.AdaBoost_RT(boost=boost, model_param=model_param, threshold=threshold) if adatype=='RT' else \
-                        self.AdaBoost_R2(boost=boost, model_param=model_param)
+        self.model = model
         self.adatype = adatype
+        self.adaboost = self.AdaBoost_original(model=self.model, boost=boost, model_param=model_param) if adatype=='original' else \
+                        self.AdaBoost_M1(model=self.model, boost=boost, model_param=model_param) if adatype=='M1' else \
+                        self.AdaBoost_RT(model=self.model, boost=boost, model_param=model_param, threshold=threshold) if adatype=='RT' else \
+                        self.AdaBoost_R2(model=self.model, boost=boost, model_param=model_param)
         
         
     def fit(self, x, y):
@@ -43,10 +41,10 @@ class AdaBoost:
         return str(self.adaboost)
     
     class AdaBoost_original:
-        def __init__(self, boost=5, model_param={}):
+        def __init__(self, model='default', boost=5, model_param={}):
             from sklearn.tree import DecisionTreeClassifier
             self.boost = boost
-            self.model = DecisionTreeClassifier
+            self.model = DecisionTreeClassifier if model=='default' else model
             self.model_param = model_param
             self.trees = None
             self.alpha = None
@@ -111,10 +109,10 @@ class AdaBoost:
 
 
     class AdaBoost_M1:
-        def __init__(self, boost=5, model_param={}):
+        def __init__(self, model='default', boost=5, model_param={}):
             from sklearn.tree import DecisionTreeClassifier
             self.boost = boost
-            self.model = DecisionTreeClassifier
+            self.model = DecisionTreeClassifier if model=='default' else model
             self.model_param = model_param
             self.trees = None
             self.beta = None
@@ -185,10 +183,10 @@ class AdaBoost:
             return '\n'.join(s)
         
     class AdaBoost_RT:
-        def __init__(self, threshold=0.01, boost=5, model_param={}):
+        def __init__(self, model='default', boost=5, model_param={}, threshold=0.01):
             from sklearn.tree import DecisionTreeRegressor
             self.boost = boost
-            self.model = DecisionTreeRegressor
+            self.model = DecisionTreeRegressor if model=='default' else model
             self.model_param = model_param
             self.trees = None
             self.beta = None
@@ -244,7 +242,7 @@ class AdaBoost:
             # 各モデルの出力の合計
             z = np.zeros((len(x),1))
             # 各モデルの貢献度を求める
-            w = np.log(1.0 / self.beta) if self.beta!=np.array([1]) else np.ones((len(self.trees),)) / len(self.trees) # 式8
+            w = np.log(1.0 / self.beta) if len(self.beta)>1 else np.ones((len(self.trees),)) # 式8
             # 全てのモデルの貢献度付き合算
             for i, tree in enumerate(self.trees):
                 p = tree.predict(x).reshape((-1, 1))
@@ -253,8 +251,7 @@ class AdaBoost:
 
         def __str__(self):
             s = []
-            w = np.log(1.0 / self.beta)
-            print(w.sum())
+            w = np.log(1.0 / self.beta) if len(self.beta)>1 else np.ones((len(self.trees),)) # 式8
             if w.sum() == 0:
                 w = np.ones((len(self.trees),)) / len(self.trees)
             else:
@@ -266,11 +263,10 @@ class AdaBoost:
         
         
     class AdaBoost_R2:
-        def __init__(self, boost=5, model_param={}):
+        def __init__(self, model='default', boost=5, model_param={}):
             from sklearn.tree import DecisionTreeRegressor
-            self.tree = DecisionTreeRegressor
             self.boost = boost
-            self.model = DecisionTreeRegressor
+            self.model = DecisionTreeRegressor if model=='default' else model
             self.model_param = model_param
             self.trees = None
             self.beta = None
@@ -341,7 +337,7 @@ class AdaBoost:
             # そのインデックスにある出力の場所（最初に並べ替えたから）
             median_estimators = idx[np.arange(len(x)), median_idx]
             # その出力の場所にある実行結果の値を求めて返す
-            result = pred[ np.arange(len(x)), median_estimators]
+            result = pred[np.arange(len(x)), median_estimators]
             return result.reshape((-1, 1))  # 元の次元の形に戻す
 
         def __str__(self):
