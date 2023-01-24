@@ -36,6 +36,24 @@ lr.fit(X_train2, y_train2)
 pd.concat([y_test2.reset_index(drop=True), pd.DataFrame(lr.predict(X_test2, threshold=0.5), columns=['pred'])], axis=1)
 
 
+# 順序ロジスティック回帰　テスト
+# シミュレーションデータの生成(3クラス分類(順序あり))
+def generate_data_classification3_ordinal():
+    A = pd.DataFrame(np.random.randint(0,100,(100,1)), columns=['X'])
+    B = pd.DataFrame(np.random.randint(50,150,(100,1)), columns=['X'])
+    C = pd.DataFrame(np.random.randint(100,200,(100,1)), columns=['X'])
+    #D = pd.DataFrame(np.random.randint(301,400,(100,1)), columns=['X'])
+    A['Y'], B['Y'], C['Y'] = 0, 1, 2
+    df = pd.concat([A,B,C], axis=0)
+    display(df)
+    return train_test_split(df[['X']], df[['Y']], test_size=0.2, random_state=42)
+
+X_train3_o, X_test3_o, y_train3_o, y_test3_o = generate_data_classification3_ordinal()
+
+lr = OLR(eta=0.00001, epoch=2000)
+lr.fit(X_train3_o, y_train3_o)
+pd.concat([y_test3_o.reset_index(drop=True), pd.DataFrame(lr.predict(X_test3_o, threshold=0.5), columns=['pred'])], axis=1)
+
 
 # 多項ロジスティック回帰　テスト
 # シミュレーションデータの生成(3クラス分類)
