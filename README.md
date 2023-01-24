@@ -9,7 +9,7 @@
 - ブラックボックスな機械学習の解釈手法についてPythonで実装しました。
 - 各手法について、使用上の注意等の簡単な説明をつけています。
 
-### [アンサンブル学習(ensemble)](https://github.com/ARAN1218/ML_Learning/tree/main/ensemble)
+### [アンサンブル学習(Ensemble)](https://github.com/ARAN1218/ML_Learning/tree/main/Ensemble)
 - アンサンブル学習のメタアルゴリズム(バギング、ブースティング、スタッキング)についてPythonで実装しました。
 - 各種アンサンブル学習を組み合わせて作った新しいメタアルゴリズムについても記述しております。
 
@@ -27,17 +27,28 @@
 
 ### その他(予定)
 - 重回帰分析
-  - 最小二乗法(OLS)
   - 加重最小二乗法(WLS)
   - 一般化最小二乗法(GLS)
   - 再帰的最小二乗法(Recursive LS)
-- ポアソン回帰
+- 順序ロジスティック回帰
 - プロビット回帰
-- 決定木
-  - 分類
-  - 回帰
+- ポアソン回帰
 - ナイーブベイズ
 - フィッシャーの線形判別
+- XGBoost
+- LightGBM
+- CatBoost
+- スタッキング(Stacking)
+- ブレンディング(Blending)
+- バンピング(Bumping)
+- M-plots
+- ALE
+- Anchor
+- LIME
+- RBFネットワーク
+- SVM
+- SVR
+- ディープニューラルネットワーク(DNN)
 
 ## 教師なし学習
 - 階層型クラスタリング
