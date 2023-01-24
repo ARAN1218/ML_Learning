@@ -74,14 +74,19 @@ $$(E[Y_i]=\pi_i, 0<\pi_i<1)$$
 - リンク関数としてロジット関数、誤差構造としてベルヌーイ分布を持つ。
 - パラメータの推定には最小二乗法ではなく、最尤推定法を用いる。
 
+<img width="508" alt="スクリーンショット 2023-01-25 0 28 37" src="https://user-images.githubusercontent.com/67265109/214336112-b4f5acb7-8643-4751-a8fb-aea1037d952a.png">
+<img width="181" alt="スクリーンショット 2023-01-25 0 28 46" src="https://user-images.githubusercontent.com/67265109/214336093-472f3543-afda-4525-9426-7fcde8f0ec50.png">
+
+
 
 ### 多項ロジスティック回帰
 - 二項ロジスティック回帰の目的変数を3つ以上のカテゴリカルデータ(名義尺度)に対応させたもの。
 - リンク関数としてロジット関数、誤差構造としてベルヌーイ分布を持つ。
 - パラメータの推定には最小二乗法ではなく、最尤推定法を用いる。
 
-<img width="481" alt="スクリーンショット 2022-12-07 23 45 10" src="https://user-images.githubusercontent.com/67265109/206491511-3bbd9e18-e7f2-4aa0-a5df-1c3ccdc97a16.png">
-<img width="433" alt="スクリーンショット 2022-12-08 23 43 43" src="https://user-images.githubusercontent.com/67265109/206491572-2d422cea-44d3-4a96-b2ab-d5257014a7a6.png">
+<img width="502" alt="スクリーンショット 2023-01-25 0 30 23" src="https://user-images.githubusercontent.com/67265109/214336567-379edaa0-f804-4068-89d4-f104e51ae001.png">
+<img width="437" alt="スクリーンショット 2023-01-25 0 30 33" src="https://user-images.githubusercontent.com/67265109/214336572-98239af4-986e-4ffe-bd9f-fdba5deed291.png">
+
 
 
 ## ポアソン回帰(ポアソン分布)
