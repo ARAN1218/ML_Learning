@@ -76,6 +76,17 @@ lr.fit(X_train3, y_train3)
 pd.concat([y_test3.reset_index(drop=True), pd.DataFrame(lr.predict(X_test3))], axis=1)
 
 
+# ポアソン回帰　テスト
+# シミュレーションデータの生成(ポアソン回帰)
+def generate_data_poisson():
+    data = pd.DataFrame(np.random.poisson(lam=10, size=1000), columns=['Y'])
+    data['X1'] = data['Y'].map(lambda x : x + np.random.randint(-20,2))#data['Y'].map(lambda x : 1 if x>=10 else 0)
+    data['X2'] = data['Y'].map(lambda x : x + np.random.randint(-2,2))
+    return train_test_split(data[['X1', 'X2']], data[['Y']], test_size=0.2, random_state=42)
 
+X_train, X_test, y_train, y_test = generate_data_poisson()
 
-
+# テスト
+lr = PoissonRegression(eta=0.00001, epoch=1000)
+lr.fit(X_train, y_train)
+pd.concat([y_test.reset_index(drop=True), pd.DataFrame(lr.predict(X_test), columns=['pred'])], axis=1)
