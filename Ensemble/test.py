@@ -196,4 +196,120 @@ rp = mean_squared_error(y, z)
 print('Mean Squared Error: %f'%rp)
 
 
+# モデル選択法　テスト
+## 交差検証 テスト
+import pandas as pd
+np.random.seed(71)
+
+df = df_iris
+x = df[df.columns[:-1]]
+y = df[df.columns[-1]]
+is_regression = False
+# ベンチマークとなるアルゴリズムと、アルゴリズムを実装したモデルの一覧
+models = [
+    [SVC(random_state=1), GaussianProcessClassifier(random_state=1),
+    KNeighborsClassifier(), MLPClassifier(random_state=1)], 
+    [SVR(), GaussianProcessRegressor(normalize_y=True, alpha=1, random_state=1),
+    KNeighborsRegressor(), MLPRegressor(hidden_layer_sizes=(5), solver='lbfgs', random_state=1)]
+]
+
+if not is_regression:
+    print("分類")
+    cv = CVSelect(is_regression, models[0], K=5)
+    cv.fit(x,y)
+    z = cv.predict(x)
+    print(str(cv))
+    display(pd.DataFrame([y,z.squeeze()], index=['target','pred']).T)
+    print((z.squeeze() == y).astype(np.float32).mean())
+else:
+    print("回帰")
+    cv = CVSelect(is_regression, models[1], K=5)
+    cv.fit(x,y)
+    z = cv.predict(x)
+    print(str(cv))
+    display(pd.DataFrame([y,z.squeeze()], index=['target','pred']).T)
+    print((abs(z.squeeze()-y)).mean())
+
+
+## 情報量基準　テスト
+import pandas as pd
+np.random.seed(71)
+
+df = df_boston
+x = df[df.columns[:-1]]
+y = df[df.columns[-1]]
+is_regression = True
+# ベンチマークとなるアルゴリズムと、アルゴリズムを実装したモデルの一覧
+models = [
+    [SVC(random_state=1), GaussianProcessClassifier(random_state=1),
+    KNeighborsClassifier(), MLPClassifier(random_state=1)], 
+    [SVR(), GaussianProcessRegressor(normalize_y=True, alpha=1, random_state=1),
+    KNeighborsRegressor(), MLPRegressor(hidden_layer_sizes=(5), solver='lbfgs', random_state=1)]
+]
+ic = "AIC"
+
+if not is_regression:
+    print("分類")
+    ic = ICSelect(is_regression, models[0], K=5, ic=ic)
+    ic.fit(x,y)
+    z = ic.predict(x)
+    print(str(bic))
+    display(pd.DataFrame([y,z.squeeze()], index=['target','pred']).T)
+    print((z.squeeze() == y).astype(np.float32).mean())
+else:
+    print("回帰")
+    ic = ICSelect(is_regression, models[1], K=5, ic=ic)
+    ic.fit(x,y)
+    z = ic.predict(x)
+    print(str(ic))
+    display(pd.DataFrame([y,z.squeeze()], index=['target','pred']).T)
+    print((abs(z.squeeze()-y)).mean())
+
+
+## バンピングテスト
+import pandas as pd
+np.random.seed(71)
+
+df = df_boston
+x = df[df.columns[:-1]]
+y = df[df.columns[-1]]
+is_regression = True
+# ベンチマークとなるアルゴリズムと、アルゴリズムを実装したモデルの一覧
+models = [
+    [SVC(random_state=1), GaussianProcessClassifier(random_state=1),
+    KNeighborsClassifier(), MLPClassifier(random_state=1)], 
+    [SVR(), GaussianProcessRegressor(normalize_y=True, alpha=1, random_state=1),
+    KNeighborsRegressor(), MLPRegressor(hidden_layer_sizes=(5), solver='lbfgs', random_state=1)]
+]
+
+if not is_regression:
+    print("分類")
+    bumping = Bumping(is_regression, tree.DecisionTreeClassifier, K=5, n_trees=5, ratio=1.0, tree_params={'max_depth':2})
+    bumping.fit(x,y)
+    z = bumping.predict(x)
+    print(str(bumping))
+    display(pd.DataFrame([y,z.squeeze()], index=['target','pred']).T)
+    print((z.squeeze() == y).astype(np.float32).mean())
+else:
+    print("回帰")
+    bumping = Bumping(is_regression, tree.DecisionTreeRegressor, K=5, n_trees=5, ratio=1.0, tree_params={'max_depth':10})
+    bumping.fit(x,y)
+    z = bumping.predict(x)
+    print(str(bumping))
+    display(pd.DataFrame([y,z.squeeze()], index=['target','pred']).T)
+    print((abs(z.squeeze()-y)).mean())
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
