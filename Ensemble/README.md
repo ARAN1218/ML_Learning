@@ -144,18 +144,54 @@ $$Ef^{2}(x) \geq [Ef(x)]^{2}$$
 - ある複数のモデルの出力をまとめることで性能の向上を図るアンサンブル学習の一種
 
 #### ゲーティング(Gating)
+- 全てのモデルに対して重みを与え、それらの出力を合算するアルゴリズム。
+  - 最後の合算は単純パーセプトロンのそれになる。
+
+##### アルゴリズム
+1. 各層に用いる機械学習モデルを選定する。
+2. 最初の層(level0)のモデルを学習させる。
+3. 2で学習させたモデルを学習データで予測させ、その出力を次の層(level1)の単純パーセプトロンの入力にして学習させる。
+4. 予測の際も2,3と同様の流れで出力を得る。
+
 
 #### スタッキング(Stacking)
-参考：https://atmarkit.itmedia.co.jp/ait/articles/2112/02/news016.html
+- ある機械学習モデルの出力を下層の機械学習モデルの入力とし、出力結果をまとめるアンサンブル学習アルゴリズムの一種。
+- ゲーティングとは違い、最終層の機械学習モデルを自由に選ぶことができる。
+- 2層構成のスタッキングをブレンディング(Blending)と呼ぶことがある。
+  - [狭義]スタッキングは評価にKFoldを用いるのに対して、それをホールドアウトでやる方法。実装がシンプルになるが過学習気味になるという特徴がある。
+  - 参考：https://atmarkit.itmedia.co.jp/ait/articles/2112/02/news016.html
+- バギングやブースティングと比較して、あまりメジャーなアンサンブル学習アルゴリズムではないが、Kaggle等では広く活用されている。
 
-#### NFold平均
+##### アルゴリズム
+1. 各層に用いる機械学習モデルを選定する。
+2. 最初の層(level0)のモデルを学習させる。
+3. 2で学習させたモデルを学習データで予測させ、その出力を次の層(level1)のモデルの入力にして学習させる。
+4. 指定した層まで3を繰り返す。
+5. 予測の際も2,3と同様の流れで出力を得る。
 
-#### Smoothed-BIC
+<img width="571" alt="スクリーンショット 2023-01-29 18 14 27" src="https://user-images.githubusercontent.com/67265109/215316774-6521ac7a-76eb-4653-8767-2f9ae822942b.png">
 
-#### ブレンディング(Blending)
-- スタッキングは評価にKFoldを用いるのに対して、それをホールドアウトでやる方法。実装がシンプルになるが過学習気味になるという特徴がある。
-参考：https://atmarkit.itmedia.co.jp/ait/articles/2112/02/news016.html
 
+#### NFold平均(NFoldMean)
+- データをK分割してK個のモデルを作り、それらの出力を平均するアルゴリズム。
+- バギングとは違い、重複なしの部分集合データを学習データとして採用している。
+- バギングはある程度個々のモデルが不完全であることを想定しているが、NFold平均ではその前提が薄れている。つまり、予め精度を最大化するように設計されたアンサンブル学習アルゴリズムに対してはNFold平均の方が良好に動作する可能性がある。
+
+##### アルゴリズム
+1. データをK分割する。
+2. K分割したデータで同一の機械学習アルゴリズムをK個学習させる。
+3. 予測の際はK個のモデルの出力の平均・多数決等で集約した結果を採用する。
+
+
+#### 情報量基準による平均法(Smoothed-ICMean)
+- 各モデルの情報量基準の値によって、出力の重み付け平均を取るアルゴリズム。
+- 情報量基準による選択法とは違い、モデルを一つに絞るのではなく全てのモデルの出力を活用する。
+- 情報量基準については[情報量基準による選択法](https://github.com/ARAN1218/ML_Learning/edit/main/Ensemble/README.md#情報量基準による選択法information-criterion-select)で説明した。
+
+##### アルゴリズム
+1. 複数の学習器を用意し、評価に用いる情報量基準の種類を決定する。
+2. それらを個別に情報量基準を用いて評価する。
+3. 2の結果に基づき、各モデルの出力の重み付け平均をとったものを最終的な出力とする。
 
 
 ### バギングをブースティングしてスタッキングする（？）
@@ -174,5 +210,13 @@ $$Ef^{2}(x) \geq [Ef(x)]^{2}$$
 
 ## 参考文献
 - 作ってわかる! アンサンブル学習アルゴリズム入門、坂本俊之、C&R研究所(2019)
+- Bagging predictors、Breiman, Leo、Machine learning(1996)
+- Random forests、Breiman, Leo、Machine learning(2001)
+- A decision-theoretic generalization of on-line learning and an application to boosting、Freund, Yoav、Journal of computer and system sciences(1997)
+- Greedy function approximation: a gradient boosting machine、Friedman, Jerome H、Annals of statistics(2001)
+- Xgboost: A scalable tree boosting system、Chen, Tianqi、Proceedings of the 22nd acm sigkdd international conference on knowledge discovery and data mining(2016)
+- Lightgbm: A highly efficient gradient boosting decision tree、Ke, Guolin、Advances in neural information processing systems(2017)
+- CatBoost: unbiased boosting with categorical features、Prokhorenkova, Liudmila、Advances in neural information processing systems(2018)
 
 ![Unknown](https://user-images.githubusercontent.com/67265109/207372585-25c2cedf-cfc0-40f9-876c-74790433cb08.jpeg)
+
