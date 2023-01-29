@@ -76,6 +76,9 @@ class CVSelect:
         
         # 最終的に最も良いモデルを選択
         self.selected = self.clf[np.argmin(scores)]
+        self.scores = [str(clf)+f"　score："+str(score) for clf,score in zip(self.clf,scores)]
+        self.scores.append("")
+        self.scores.append("selected model："+str(self.clf[np.argmin(scores)])+f"　score："+str(min(scores)))
         
         # 最も良いモデルに全てのデータを学習させる
         self.selected.fit(x, y)
@@ -92,4 +95,4 @@ class CVSelect:
 
     def __str__(self):
         """選択したモデルの開示"""
-        return str(self.selected)
+        return "\n".join(self.scores)
