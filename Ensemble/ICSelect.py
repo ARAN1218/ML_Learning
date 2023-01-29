@@ -81,7 +81,7 @@ class ICSelect:
                     p = predicts.pop(0)
                     score = self.metric(p[0], p[1])
                     # モデルのパラメータ数を取得する
-                    n_params = len(self.clf[j].get_params())
+                    n_params = x.shape[1]
                     # 罰則項を加えたスコアで計算
                     scores[j] += 2 * np.log(score + 1e-9) + 2 * n_params
         else: # 情報量基準としてBICを選択
@@ -91,12 +91,15 @@ class ICSelect:
                     p = predicts.pop(0)
                     score = self.metric(p[0], p[1])
                     # モデルのパラメータ数を取得する
-                    n_params = len(self.clf[j].get_params())
+                    n_params = x.shape[1]
                     # 罰則項を加えたスコアで計算
                     scores[j] += x.shape[0] * np.log(score + 1e-9) + n_params * np.log(x.shape[0])
 
         # 最終的に最も良いモデルを選択
         self.selected = self.clf[np.argmin(scores)]
+        self.scores = [str(clf)+f"　{self.ic}："+str(score) for clf,score in zip(self.clf,scores)]
+        self.scores.append("")
+        self.scores.append("selected model："+str(self.clf[np.argmin(scores)])+f"　{self.ic}："+str(min(scores)))
         
         # 最も良いモデルに全てのデータを学習させる
         self.selected.fit(x, y)
@@ -113,4 +116,4 @@ class ICSelect:
 
     def __str__(self):
         """選択したモデルの開示"""
-        return str(self.selected)
+        return "\n".join(self.scores)
