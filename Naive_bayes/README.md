@@ -18,3 +18,7 @@
 
 <img width="180" alt="スクリーンショット 2023-07-06 22 48 53" src="https://github.com/ARAN1218/ML_Learning/assets/67265109/af80bc12-5567-4f8e-80ae-45d2c183d77d">
 
+## 参考文献
+1. 機械学習、周志華 著、近代科学者(2022)
+
+![Unknown](https://github.com/ARAN1218/ML_Learning/assets/67265109/9baa90e6-0cab-4813-b9a5-ea04fcefa70a)
